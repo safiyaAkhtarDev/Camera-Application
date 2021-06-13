@@ -1,4 +1,4 @@
-# Comera-Application
+# Camera-Application
 
 1. used MVP architecture
 2. used Exif Interface
