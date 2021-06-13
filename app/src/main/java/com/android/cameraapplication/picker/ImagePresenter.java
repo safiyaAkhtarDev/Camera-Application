@@ -38,7 +38,7 @@ public class ImagePresenter implements ImageContract.Presenter {
 
     @Override
     public void permissionDenied() {
-        view.showPermissionDialog();
+        view.permissionDenied();
     }
 
     @Override

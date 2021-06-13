@@ -2,7 +2,7 @@
     <string name="app_name">Camera Application</string>
     <string name="message_need_permission">We Need Permission</string>
     <string name="message_grant_permission">Grant Permission</string>
-    <string name="label_setting">Label</string>
+    <string name="label_setting">Setting</string>
     <string name="cancel">cancel</string>
     <string name="error_message_no_more_space">No More Space</string>
     <string name="error_message_insufficient_space">Insufficient Space</string>

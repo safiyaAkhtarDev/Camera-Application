@@ -23,19 +23,18 @@
         android:id="@+id/img_SelectedImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="?attr/actionBarSize"
         android:paddingBottom="?attr/actionBarSize"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"></androidx.appcompat.widget.AppCompatImageView>
+        app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.AppCompatImageView>
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_function"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/teal_700"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,7 +80,7 @@
                 android:tooltipText="Flip Vertical"></androidx.appcompat.widget.AppCompatImageView>
         </LinearLayout>
 
-    </androidx.appcompat.widget.Toolbar>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/layout_save"

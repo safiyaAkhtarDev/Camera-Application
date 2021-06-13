@@ -29,7 +29,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
     AppCompatImageView img_rotate_horizontal;
     AppCompatImageView img_rotate_vertical;
     AppCompatImageView img_SelectedImage;
-    Toolbar toolbar;
+    ConstraintLayout cl_function;
     private ImagePresenter mPresenter;
     Uri photoURI;
 
@@ -81,20 +80,10 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
     private String exif_DATETIME = "";
     private String exif_FLASH = "";
     private String exif_FOCAL_LENGTH = "";
-    private String exif_GPS_DATESTAMP = "";
-    private String exif_GPS_LATITUDE = "";
-    private String exif_GPS_LATITUDE_REF = "";
-    private String exif_GPS_LONGITUDE = "";
-    private String exif_GPS_LONGITUDE_REF = "";
-    private String exif_GPS_PROCESSING_METHOD = "";
-    private String exif_GPS_TIMESTAMP = "";
     private String exif_IMAGE_LENGTH = "";
     private String exif_IMAGE_WIDTH = "";
-    private String exif_MAKE = "";
     private String exif_MODEL = "";
     private String exif_ORIENTATION = "";
-    private String exif_WHITE_BALANCE = "";
-    private String exif_ISO = "";
     private String mFileName;
     private File galleryFile;
     private Bitmap bitmap;
@@ -113,16 +102,23 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
         layout_save = findViewById(R.id.layout_save);
         btn_save = findViewById(R.id.btn_save);
         btn_cancel = findViewById(R.id.btn_cancel);
-        toolbar = findViewById(R.id.toolbar);
+        cl_function = findViewById(R.id.cl_function);
 
         layout_save.setVisibility(View.GONE);
         btn_select_image.setVisibility(View.VISIBLE);
-        toolbar.setVisibility(View.GONE);
+        cl_function.setVisibility(View.GONE);
 
         btn_select_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectImage();
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.cancelImage();
             }
         });
         img_crop.setOnClickListener(new View.OnClickListener() {
@@ -211,7 +207,8 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
                         // check for permanent denial of any permission
                         if (report.isAnyPermissionPermanentlyDenied()) {
                             // show alert dialog navigating to Settings
-                            showSettingsDialog();
+                            mPresenter.permissionDenied();
+
                         }
                     }
 
@@ -270,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
     public void saveImage(Uri uri) {
         layout_save.setVisibility(View.GONE);
         btn_select_image.setVisibility(View.GONE);
-        toolbar.setVisibility(View.VISIBLE);
+        cl_function.setVisibility(View.VISIBLE);
 
     }
 
@@ -279,12 +276,13 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
         layout_save.setVisibility(View.VISIBLE);
         btn_select_image.setVisibility(View.VISIBLE);
         img_SelectedImage.setVisibility(View.GONE);
-        toolbar.setVisibility(View.GONE);
+        layout_save.setVisibility(View.GONE);
+        cl_function.setVisibility(View.GONE);
     }
 
     @Override
     public void permissionDenied() {
-
+        showSettingsDialog();
     }
 
     @Override
@@ -395,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
     public void displayImagePreview(String mFilePath) {
         layout_save.setVisibility(View.VISIBLE);
         img_SelectedImage.setVisibility(View.VISIBLE);
-        toolbar.setVisibility(View.GONE);
+        cl_function.setVisibility(View.GONE);
         btn_select_image.setVisibility(View.GONE);
         Glide.with(MainActivity.this).load(mFilePath)
                 .apply(new RequestOptions()
@@ -456,20 +454,6 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
 
     }
 
-//
-//    @SuppressLint("RestrictedApi")
-//    private void showExifInformation(String filename) {
-//        try {
-//            ExifInterface exif = new ExifInterface(filename);
-//            Log.d("safiyas ", String.valueOf(exif.getAttribute(ExifInterface.TAG_DATETIME)));
-//            ShowExif(exif);
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//            Toast.makeText(this, "Error!",
-//                    Toast.LENGTH_LONG).show();
-//        }
-//    }
 
     public static String dateFormat(String date) {
         try {
@@ -515,19 +499,10 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
         exif_DATETIME = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
         exif_FLASH = exifInterface.getAttribute(ExifInterface.TAG_FLASH);
         exif_FOCAL_LENGTH = exifInterface.getAttribute(ExifInterface.TAG_FOCAL_PLANE_X_RESOLUTION);
-        exif_GPS_DATESTAMP = exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
-        exif_GPS_LATITUDE = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-        exif_GPS_LATITUDE_REF = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
-        exif_GPS_LONGITUDE = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-        exif_GPS_LONGITUDE_REF = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-        exif_GPS_PROCESSING_METHOD = exifInterface.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
-        exif_GPS_TIMESTAMP = exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP);
+
         exif_IMAGE_LENGTH = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
         exif_IMAGE_WIDTH = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
-        exif_MAKE = exifInterface.getAttribute(ExifInterface.TAG_MAKE);
         exif_MODEL = exifInterface.getAttribute(ExifInterface.TAG_MODEL);
-        exif_WHITE_BALANCE = exifInterface.getAttribute(ExifInterface.TAG_WHITE_BALANCE);
-        exif_ISO = exifInterface.getAttribute(ExifInterface.TAG_ISO_SPEED_LATITUDE_YYY);
         if (exif_DATETIME != null) {
             txt_date.setText(dateFormat(exif_DATETIME));
             txt_date_time.setText(dateTimeFormat(exif_DATETIME));
@@ -573,25 +548,5 @@ public class MainActivity extends AppCompatActivity implements ImageContract.Vie
 
 
         dialog.show();
-
-        Log.d("safiyas exif info ", "Name without extension: " + getFilePath() + "\n" +
-                "with extension: " + mFileName + "\n" +
-
-                "Date Time: " + exif_DATETIME + "\n" +
-                "Flash: " + exif_FLASH + "\n" +
-                "Focal Length: " + exif_FOCAL_LENGTH + "\n" +
-                "GPS Date Stamp: " + exif_GPS_DATESTAMP + "\n" +
-                "GPS Latitude: " + exif_GPS_LATITUDE + "\n" +
-                "GPS Latitute Ref: " + exif_GPS_LATITUDE_REF + "\n" +
-                "GPS Longitude: " + exif_GPS_LONGITUDE + "\n" +
-                "GPS Longitude Ref: " + exif_GPS_LONGITUDE_REF + "\n" +
-                "Processing Method: " + exif_GPS_PROCESSING_METHOD + "\n" +
-                "GPS Time Stamp: " + exif_GPS_TIMESTAMP + "\n" +
-                "Image Length: " + exif_IMAGE_LENGTH + "\n" +
-                "Image Width: " + exif_IMAGE_WIDTH + "\n" +
-                "Make: " + exif_MAKE + "\n" +
-                "Model: " + exif_MODEL + "\n" +
-                "Orientation: " + exif_ORIENTATION + "\n" +
-                "White Balance: " + exif_WHITE_BALANCE + "\n");
     }
 }
